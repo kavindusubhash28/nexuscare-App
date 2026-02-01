@@ -38,3 +38,4 @@ CREATE TABLE IF NOT EXISTS labs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_labs_license ON labs (lab_license_no);
+
