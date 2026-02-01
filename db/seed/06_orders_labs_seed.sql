@@ -1,20 +1,56 @@
--- placeholder
--- Orders
+
 INSERT INTO orders (patient_id, prescription_id, total_price)
-VALUES (1, 1, 2500.00);
+SELECT
+  p.patient_id,
+  pr.prescription_id,
+  2500.00
+FROM patients p
+JOIN prescription pr ON TRUE
+LIMIT 1
+ON CONFLICT DO NOTHING;
 
--- Priority order
+
 INSERT INTO priority_orders (order_id, collecting_time, additional_charge)
-VALUES (1, '2 hours', 500.00);
+SELECT
+  o.order_id,
+  INTERVAL '2 hours',
+  500.00
+FROM orders o
+ORDER BY o.order_id DESC
+LIMIT 1
+ON CONFLICT DO NOTHING;
 
--- Normal order
+
 INSERT INTO normal_orders (order_id, is_prepared)
-VALUES (1, TRUE);
+SELECT
+  o.order_id,
+  TRUE
+FROM orders o
+ORDER BY o.order_id DESC
+LIMIT 1
+ON CONFLICT DO NOTHING;
 
--- Recommended report
+
 INSERT INTO recommended_reports (patient_id, doctor_id, test_name)
-VALUES (1, 2, 'Blood Sugar');
+SELECT
+  p.patient_id,
+  d.user_id,
+  'Blood Sugar'
+FROM patients p
+JOIN doctors d ON TRUE
+LIMIT 1
+ON CONFLICT DO NOTHING;
 
--- Lab report
+
 INSERT INTO lab_reports (patient_id, doctor_id, lab_id, test_name, file_url)
-VALUES (1, 2, 3, 'Blood Sugar', 'https://example.com/report1.pdf');
+SELECT
+  p.patient_id,
+  d.user_id,
+  l.user_id,
+  'Blood Sugar',
+  'https://example.com/lab_report_001.pdf'
+FROM patients p
+JOIN doctors d ON TRUE
+JOIN labs l ON TRUE
+LIMIT 1
+ON CONFLICT DO NOTHING;
