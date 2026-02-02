@@ -1,4 +1,4 @@
-
+-- 1) Orders Table
 CREATE TABLE IF NOT EXISTS orders (
     order_id BIGSERIAL PRIMARY KEY,
     patient_id VARCHAR(10) NOT NULL,
@@ -31,7 +31,6 @@ CREATE TABLE IF NOT EXISTS priority_orders (
         REFERENCES orders(order_id)
         ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS normal_orders (
     order_id BIGINT PRIMARY KEY,

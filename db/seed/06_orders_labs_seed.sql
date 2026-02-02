@@ -1,4 +1,3 @@
-
 INSERT INTO orders (patient_id, prescription_id, total_price)
 SELECT
   p.patient_id,

@@ -1,4 +1,3 @@
-
 SELECT
   order_id,
   patient_id,
@@ -48,7 +47,6 @@ SELECT rr.report_id
 FROM recommended_reports rr
 LEFT JOIN staff_base sb ON sb.user_id = rr.doctor_id
 WHERE sb.user_id IS NULL;
-
 
 SELECT
   lr.lab_report_id,
