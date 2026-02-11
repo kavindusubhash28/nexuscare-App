@@ -61,28 +61,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION generate_prescription_id() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION generate_prescription_id() RETURN TRIGGER AS $$
 BEGIN
     NEW.prescription_id := 'PREC' || LPAD(nextval('prescription_seq')::TEXT, 4, '0');
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION generate_p_order_id() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION generate_p_order_id() RETURN TRIGGER AS $$
 BEGIN
     NEW.order_id := 'PORD' || LPAD(nextval('p_order_seq')::TEXT, 4, '0');
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION generate_n_order_id() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION generate_n_order_id() RETURN TRIGGER AS $$
 BEGIN
     NEW.order_id := 'NORD' || LPAD(nextval('n_order_seq')::TEXT, 4, '0');
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION generate_lab_report_id() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION generate_lab_report_id() RETURN TRIGGER AS $$
 BEGIN
     NEW.lab_report_id := 'LBRE' || LPAD(nextval('lab_report_seq')::TEXT, 4, '0');
     RETURN NEW;
