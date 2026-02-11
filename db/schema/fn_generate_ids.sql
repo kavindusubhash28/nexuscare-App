@@ -47,6 +47,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION generate_availability_id() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.availability_id := 'AVL' || LPAD(nextval('availability_seq')::TEXT, 4, '0');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION generate_appointment_id() RETURNS TRIGGER AS $$
 BEGIN
     NEW.appointment_id := 'APP' || LPAD(nextval('appointment_seq')::TEXT, 4, '0');
