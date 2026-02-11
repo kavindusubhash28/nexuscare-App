@@ -1,29 +1,12 @@
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- ===============================
+-- Seed Data for users table
+-- ===============================
 
-CREATE TABLE IF NOT EXISTS users (
-  user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  first_name   VARCHAR(60) NOT NULL,
-  last_name    VARCHAR(60) NOT NULL,
-  contact_no1  VARCHAR(20),
-  contact_no2  VARCHAR(20),
-  address      TEXT,
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS credentials (
-  user_id UUID PRIMARY KEY,
-  firebase_uid VARCHAR(128) UNIQUE NOT NULL,
-  user_name   VARCHAR(80)  UNIQUE NOT NULL,
-  email       VARCHAR(120) UNIQUE NOT NULL,
-  role VARCHAR(20) NOT NULL
-    CHECK (role IN ('ADMIN','DOCTOR','PATIENT','LAB','PHARMACY','RESPONDER')),
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-  CONSTRAINT fk_credentials_user
-    FOREIGN KEY (user_id)
-    REFERENCES users(user_id)
-    ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_credentials_role ON credentials(role);
-CREATE INDEX IF NOT EXISTS idx_credentials_email ON credentials(email);
+INSERT INTO users (user_id, name, contact_no1, contact_no2, address)
+VALUES
+('U001', 'System Admin',  '0700000000', NULL, 'NexusCare HQ'),
+('U002', 'John Doctor',   '0711111111', NULL, 'Colombo'),
+('U003', 'Jane Patient',  '0722222222', NULL, 'Kandy'),
+('U004', 'Lanka Lab',     '0733333333', NULL, 'Galle'),
+('U005', 'City Pharmacy', '0744444444', NULL, 'Kurunegala')
+ON CONFLICT (user_id) DO NOTHING;
