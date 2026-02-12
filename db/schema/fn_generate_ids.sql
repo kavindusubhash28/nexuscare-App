@@ -1,3 +1,4 @@
+---function geenrated for id geenration
 CREATE OR REPLACE FUNCTION generate_user_id() RETURNS TRIGGER AS $$
 BEGIN
     NEW.user_id := 'NEX' || LPAD(nextval('user_seq')::TEXT, 6, '0');
