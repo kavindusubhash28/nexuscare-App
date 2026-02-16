@@ -88,3 +88,10 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION generate_payment_id() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.payment_id := 'PYMT' || LPAD(nextval('payment_seq')::TEXT, 4, '0');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
