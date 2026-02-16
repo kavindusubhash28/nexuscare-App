@@ -1,17 +1,17 @@
 CREATE TABLE IF NOT EXISTS payments (
-  payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  payment_id VARCHAR(10) PRIMARY KEY,
 
   patient_id VARCHAR(10) NOT NULL
-    REFERENCES patients(patient_id)
+    REFERENCES patient(patient_id)
     ON DELETE CASCADE,
 
-  appointment_id UUID
+  appointment_id VARCHAR(10)
     REFERENCES appointment(appointment_id)
     ON DELETE CASCADE,
 
-  order_id BIGINT
-    REFERENCES orders(order_id)
-    ON DELETE CASCADE,
+  p_order_id VARCHAR(10),
+
+    n_order_id VARCHAR(10),
 
   amount NUMERIC(10,2) NOT NULL CHECK (amount >= 0),
   currency CHAR(3) NOT NULL DEFAULT 'LKR',
@@ -29,12 +29,8 @@ CREATE TABLE IF NOT EXISTS payments (
   paid_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  CONSTRAINT chk_payment_target
-    CHECK (
-      (appointment_id IS NOT NULL AND order_id IS NULL)
-      OR
-      (appointment_id IS NULL AND order_id IS NOT NULL)
-    )
+  CONSTRAINT n_order_id FOREIGN KEY (n_order_id) REFERENCES normal_order(order_id) ON DELETE CASCADE,
+  CONSTRAINT p_order_id FOREIGN KEY (p_order_id) REFERENCES priority_order(order_id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_payments_patient

@@ -17,4 +17,11 @@ CREATE TRIGGER trg_generate_prescription_id BEFORE INSERT ON prescription FOR EA
 -- Orders Triggers
 CREATE TRIGGER trg_generate_P_order_id BEFORE INSERT ON priority_order FOR EACH ROW EXECUTE FUNCTION generate_p_order_id();
 CREATE TRIGGER trg_generate_n_order_id BEFORE INSERT ON normal_order FOR EACH ROW EXECUTE FUNCTION generate_n_order_id();
+<<<<<<< Updated upstream
 CREATE TRIGGER trg_generate_lab_report_id BEFORE INSERT ON lab_reports FOR EACH ROW EXECUTE FUNCTION generate_lab_report_id();
+=======
+--labReportID
+CREATE TRIGGER trg_generate_lab_report_id BEFORE INSERT ON lab_reports FOR EACH ROW EXECUTE FUNCTION generate_lab_report_id();
+--paymentID
+CREATE TRIGGER trg_generate_payment_id BEFORE INSERT ON payments FOR EACH ROW EXECUTE FUNCTION generate_payment_id();
+>>>>>>> Stashed changes
