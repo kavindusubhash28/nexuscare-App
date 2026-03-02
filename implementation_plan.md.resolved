@@ -1,0 +1,33 @@
+# Implementation Plan - Fix Database Connection & Add Mock Mode
+
+## Goal
+Resolve the `psycopg2.OperationalError` caused by SSL mismatch and enable a mock database mode for testing APIs without a live database.
+
+## Proposed Changes
+
+### Backend Utilities
+#### [MODIFY] [db.py](file:///c:/Users/Yasira/Desktop/nexuscare-App/backend/src/utils/db.py)
+Update [get_conn()](file:///c:/Users/Yasira/Desktop/nexuscare-App/backend/src/utils/db.py#7-16) to:
+- Accept `sslmode` from environment variables (defaulting to `disable` for local dev).
+- Support a `MOCK_DB` environment variable to return mock data if enabled.
+
+### Backend Configuration
+#### [MODIFY] [.env.example](file:///c:/Users/Yasira/Desktop/nexuscare-App/backend/.env.example)
+Add common database environment variables:
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+- `SSL_MODE`
+- `MOCK_DB` (true/false)
+
+## Verification Plan
+
+### Automated Tests
+- Run [app.py](file:///c:/Users/Yasira/Desktop/nexuscare-App/backend/app.py) and test `/health` endpoint.
+- Use Postman to test `/api/doctor/patients/search` with both `MOCK_DB=true` and `MOCK_DB=false`.
+
+### Manual Verification
+- Verify that the `psycopg2.OperationalError` is resolved when connecting to a local database without SSL.
+- Verify that Supabase connections still work with `SSL_MODE=require`.

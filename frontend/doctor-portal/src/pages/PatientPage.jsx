@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { apiFetch } from "../api/client";
 
 export default function PatientPage() {
   const { id } = useParams();
@@ -7,11 +8,12 @@ export default function PatientPage() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch(
-        `http://localhost:5000/doctor/patients/by-qr?qr=${id}`
-      );
-      const data = await res.json();
-      setPatient(data.patient || data);
+      try {
+        const data = await apiFetch(`/api/doctor/patients/by-qr?qr=${id}`);
+        setPatient(data.patient || data);
+      } catch (err) {
+        console.error("Failed to load patient:", err);
+      }
     }
     load();
   }, [id]);

@@ -1,0 +1,218 @@
+{
+    "info": {
+        "_postman_id": "7d9e2b1c-3a4b-4c5d-8e6f-9a0b1c2d3e4f",
+        "name": "NexusCare Appointment Routes",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Doctor Dashboard",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/doctor/dashboard?doctor_id=DOC001",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "doctor",
+                        "dashboard"
+                    ],
+                    "query": [
+                        {
+                            "key": "doctor_id",
+                            "value": "DOC001"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Doctor Profile",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/doctor/profile?doctor_id=DOC001",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "doctor",
+                        "profile"
+                    ],
+                    "query": [
+                        {
+                            "key": "doctor_id",
+                            "value": "DOC001"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Doctor Appointments",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/doctors/DOC001/appointments?filter=today",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "doctors",
+                        "DOC001",
+                        "appointments"
+                    ],
+                    "query": [
+                        {
+                            "key": "filter",
+                            "value": "today"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Start Consultation",
+            "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/appointments/APP001/start",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "appointments",
+                        "APP001",
+                        "start"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Complete Consultation",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"diagnosis\": \"Common Cold\",\n    \"notes\": \"Rest and hydrate.\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/appointments/APP001/complete",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "appointments",
+                        "APP001",
+                        "complete"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Doctor Prescriptions",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/doctors/DOC001/prescriptions",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "doctors",
+                        "DOC001",
+                        "prescriptions"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create Prescription",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"medicine_name\": \"Paracetamol\",\n    \"dosage\": \"500mg\",\n    \"frequency\": \"twice daily\",\n    \"duration_days\": 5\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/medical-record/MR000001/prescription",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "medical-record",
+                        "MR000001",
+                        "prescription"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Request Lab",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"lab_id\": \"LAB001\",\n    \"test_name\": \"Full Blood Count\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/medical-record/MR000001/lab-request",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "medical-record",
+                        "MR000001",
+                        "lab-request"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:5000"
+        }
+    ]
+}

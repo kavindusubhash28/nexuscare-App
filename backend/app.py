@@ -1,15 +1,19 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from db import get_conn
+from src.utils.db import get_conn
 
-from routes.appointment_routes import appointment_bp
-from routes.qr import doctor_bp
+from src.routes.appointment_routes import doctor_bp
+from src.routes.patient_qr_lookup import qr_bp
+
 app = Flask(__name__)       
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
 
-
-app.register_blueprint(appointment_bp, url_prefix="/api")
 app.register_blueprint(doctor_bp, url_prefix="/api")
+app.register_blueprint(qr_bp, url_prefix="/api")
+
+@app.route("/")
+def index():
+    return jsonify({"status": "ok", "service": "nexuscare-backend"})
 
 @app.route("/health")
 def health():

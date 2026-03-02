@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { apiFetch } from "../api/client";
 
 export default function ScanPage() {
   const navigate = useNavigate();
@@ -16,15 +17,7 @@ export default function ScanPage() {
   }, []);
 
   async function lookupPatient(scannedValue) {
-    const url = `http://localhost:5000/doctor/patients/by-qr?qr=${encodeURIComponent(scannedValue)}`;
-
-    const res = await fetch(url);
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      const msg = data?.error || `Request failed (${res.status})`;
-      throw new Error(msg);
-    }
+    const data = await apiFetch(`/api/doctor/patients/by-qr?qr=${encodeURIComponent(scannedValue)}`);
 
     // Support both response styles:
     // 1) { patient: { patient_id: "PT0001", ... }, emergency: {...} }
