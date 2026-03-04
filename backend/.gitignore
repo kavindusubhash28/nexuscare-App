@@ -1,27 +1,65 @@
- 
-# Environment variables
+# =========================
+# Environment Variables
+# =========================
 .env
 .env.*
+.env.local
+.env.production
 
-# Python cache
+# =========================
+# Python Virtual Environment
+# =========================
+venv/
+env/
+ENV/
+
+# =========================
+# Python Cache
+# =========================
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Virtual environments
-venv/
-env/
+# =========================
+# Logs
+# =========================
+*.log
 
-# VSCode
+# =========================
+# Firebase Credentials
+# =========================
+firebase_service_key.json
+firebase-service-account.json
+
+# =========================
+# IDE / Editor files
+# =========================
 .vscode/
+.idea/
 
+# =========================
 # OS files
+# =========================
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
+# =========================
+# Testing / Coverage
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
 
-# Firebase keys
-firebase-service-account.json
+# =========================
+# Build files
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.swp
