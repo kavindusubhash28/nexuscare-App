@@ -40,8 +40,8 @@ app.register_blueprint(doctor_bp, url_prefix="/api")
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(admin_bp, url_prefix="/admin")
 
-# Initialise Firebase Admin SDK
-init_firebase()
+# Initialise Firebase Admin SDK if credentials are available.
+init_firebase(required=False)
 
 @app.route("/health")
 def health():
