@@ -2,9 +2,11 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from src.utils.db import get_conn
+from src.auth_service.firebase.firebase_init import init_firebase
 
 from src.routes.appointment import appointment_bp
 from src.routes.qr import doctor_bp
+from src.auth_service.auth.routes import auth_bp, admin_bp
 
 app = Flask(__name__)
 
@@ -35,6 +37,11 @@ CORS(
 
 app.register_blueprint(appointment_bp, url_prefix="/api")
 app.register_blueprint(doctor_bp, url_prefix="/api")
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(admin_bp, url_prefix="/admin")
+
+# Initialise Firebase Admin SDK
+init_firebase()
 
 @app.route("/health")
 def health():
