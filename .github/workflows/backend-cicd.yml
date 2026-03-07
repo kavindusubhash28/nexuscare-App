@@ -218,23 +218,23 @@ jobs:
       - name: Provision secrets on EC2
         uses: appleboy/ssh-action@v1
         env:
-          AUTH_DB_HOST:         ${{ secrets.AUTH_DB_HOST }}
-          AUTH_DB_PORT:         ${{ secrets.AUTH_DB_PORT }}
-          AUTH_DB_NAME:         ${{ secrets.AUTH_DB_NAME }}
-          AUTH_DB_USER:         ${{ secrets.AUTH_DB_USER }}
-          AUTH_DB_PASSWORD:     ${{ secrets.AUTH_DB_PASSWORD }}
-          HOSPITAL_DB_HOST:     ${{ secrets.HOSPITAL_DB_HOST }}
-          HOSPITAL_DB_PORT:     ${{ secrets.HOSPITAL_DB_PORT }}
-          HOSPITAL_DB_NAME:     ${{ secrets.HOSPITAL_DB_NAME }}
-          HOSPITAL_DB_USER:     ${{ secrets.HOSPITAL_DB_USER }}
+          AUTH_DB_HOST: ${{ secrets.AUTH_DB_HOST }}
+          AUTH_DB_PORT: ${{ secrets.AUTH_DB_PORT }}
+          AUTH_DB_NAME: ${{ secrets.AUTH_DB_NAME }}
+          AUTH_DB_USER: ${{ secrets.AUTH_DB_USER }}
+          AUTH_DB_PASSWORD: ${{ secrets.AUTH_DB_PASSWORD }}
+          HOSPITAL_DB_HOST: ${{ secrets.HOSPITAL_DB_HOST }}
+          HOSPITAL_DB_PORT: ${{ secrets.HOSPITAL_DB_PORT }}
+          HOSPITAL_DB_NAME: ${{ secrets.HOSPITAL_DB_NAME }}
+          HOSPITAL_DB_USER: ${{ secrets.HOSPITAL_DB_USER }}
           HOSPITAL_DB_PASSWORD: ${{ secrets.HOSPITAL_DB_PASSWORD }}
-          FIREBASE_API_KEY:     ${{ secrets.FIREBASE_API_KEY }}
-          FIREBASE_KEY_B64:     ${{ secrets.FIREBASE_SERVICE_KEY_B64 }}
-          JWT_SECRET:           ${{ secrets.JWT_SECRET }}
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_KEY_B64: ${{ secrets.FIREBASE_SERVICE_KEY_B64 }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         with:
-          host:     ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key:      ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           envs: AUTH_DB_HOST,AUTH_DB_PORT,AUTH_DB_NAME,AUTH_DB_USER,AUTH_DB_PASSWORD,HOSPITAL_DB_HOST,HOSPITAL_DB_PORT,HOSPITAL_DB_NAME,HOSPITAL_DB_USER,HOSPITAL_DB_PASSWORD,FIREBASE_API_KEY,FIREBASE_KEY_B64,JWT_SECRET
           script: |
             set -e
@@ -269,9 +269,9 @@ jobs:
       - name: Deploy container on EC2
         uses: appleboy/ssh-action@v1
         with:
-          host:     ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key:      ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
             echo "=== Pulling latest image from Docker Hub ==="
