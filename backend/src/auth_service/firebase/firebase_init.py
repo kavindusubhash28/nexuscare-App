@@ -22,6 +22,11 @@ def init_firebase(required=False):
             )
         return False
 
-    cred = credentials.Certificate(key_path)
-    firebase_admin.initialize_app(cred)
-    return True
+    try:
+        cred = credentials.Certificate(key_path)
+        firebase_admin.initialize_app(cred)
+        return True
+    except (PermissionError, OSError) as exc:
+        if required:
+            raise
+        return False

@@ -260,8 +260,10 @@ jobs:
             # Decode and write firebase service-account key
             echo "$FIREBASE_KEY_B64" | base64 -d > ~/nexuscare/firebase_service_key.json
 
-            # Lock down permissions so only the current user can read them
-            chmod 600 ~/nexuscare/.env ~/nexuscare/firebase_service_key.json
+            # Lock down .env (read by Docker daemon as root, so 600 is fine)
+            chmod 600 ~/nexuscare/.env
+            # Firebase key must be world-readable: container runs as non-root appuser
+            chmod 644 ~/nexuscare/firebase_service_key.json
 
             echo "Secrets provisioned successfully."
 
