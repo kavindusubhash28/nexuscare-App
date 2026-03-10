@@ -123,7 +123,7 @@ class DashboardScreen extends StatelessWidget {
                               ),
 
                               Text(
-                                "Scan to access medical data",
+                                "Scan to access your medical data",
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),
