@@ -3,17 +3,33 @@ from db import get_db
 
 def order_medicine(app):
 
-    @app.route("/patient/order/<order_type>/<patient_id>/<prescription_id>/<pharmacy_id>", methods=["POST"])
-    def create_order(order_type, patient_id, prescription_id, pharmacy_id):
+    @app.route("/prescription/order", methods=["POST"])
+    def create_order():
 
         try:
+            data = request.get_json()
+
+            # ==========================
+            # Extract parameters
+            # ==========================
+            order_type = data.get("order_type")
+            patient_id = data.get("patient_id")
+            prescription_id = data.get("prescription_id")
+            pharmacy_id = data.get("pharmacy_id")
+            collecting_time = data.get("collecting_time")
+
+            # ==========================
+            # Validate input
+            # ==========================
+            if not all([order_type, patient_id, prescription_id, pharmacy_id]):
+                return jsonify({"error": "Missing required fields"}), 400
+
             conn = get_db()
             cur = conn.cursor()
 
-            data = request.get_json(silent=True) or {}
-            collecting_time = data.get("collecting_time")
-
+            # ==========================
             # NORMAL ORDER
+            # ==========================
             if order_type == "normal":
 
                 cur.execute("""
@@ -28,7 +44,9 @@ def order_medicine(app):
                 """, (patient_id, prescription_id, pharmacy_id))
 
 
+            # ==========================
             # PRIORITY ORDER
+            # ==========================
             elif order_type == "priority":
 
                 if not collecting_time:
@@ -44,6 +62,7 @@ def order_medicine(app):
                     VALUES (%s, %s, %s, %s)
                     RETURNING order_id;
                 """, (patient_id, prescription_id, pharmacy_id, collecting_time))
+
 
             else:
                 return jsonify({"error": "Invalid order type"}), 400
