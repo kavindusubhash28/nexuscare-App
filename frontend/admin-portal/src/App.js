@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import logo from "./assets/logo.jpeg";
 
+const API_BASE_URL = (process.env.REACT_APP_API_URL || "").replace(/\/+$/, "");
+const apiUrl = (path) => `${API_BASE_URL}${path}`;
+
 /* ================= SIDEBAR ================= */
 
 function Sidebar({ setPage, page }) {
@@ -67,7 +70,7 @@ function Dashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/admin/dashboard")
+    fetch(apiUrl("/admin/dashboard"))
       .then(res => {
         if (!res.ok) throw new Error("Unauthorized or Error");
         return res.json();
@@ -179,7 +182,7 @@ function RegistrationRequests() {
 
     setLoading(true);
 
-    fetch(`http://127.0.0.1:5000/admin/${endpoint}`)
+    fetch(apiUrl(`/admin/${endpoint}`))
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -264,7 +267,7 @@ function RegistrationRequests() {
 
   const updateStatus = (status) => {
     fetch(
-      `http://127.0.0.1:5000/admin/update/${role}/${item.id}/${status}`,
+      apiUrl(`/admin/update/${role}/${item.id}/${status}`),
       { method: "POST" }
     )
       .then(res => res.json())
@@ -384,7 +387,7 @@ function ManageUsers() {
 
 const deleteUser = async (userId) => {
 
-  await fetch(`http://127.0.0.1:5000/admin/delete-login/${userId}`, {
+  await fetch(apiUrl(`/admin/delete-login/${userId}`), {
     method: "DELETE"
   });
   setShowDeleteConfirm(false);
@@ -393,7 +396,7 @@ const deleteUser = async (userId) => {
   const fetchUsers = useCallback(() => {
     setLoading(true);
 
-    fetch(`http://127.0.0.1:5000/admin/users/${activeTab}`)
+    fetch(apiUrl(`/admin/users/${activeTab}`))
       .then(res => res.json())
       .then(data => setUsers(data))
       .catch(err => console.error(err))
@@ -403,7 +406,7 @@ const deleteUser = async (userId) => {
   const fetchDetails = (userId) => {
   setLoading(true);
 
-  fetch(`http://127.0.0.1:5000/admin/user-details/${activeTab}/${userId}`)
+  fetch(apiUrl(`/admin/user-details/${activeTab}/${userId}`))
     .then(res => res.json())
     .then(data => setDetails(data))
     .catch(err => console.error(err))
