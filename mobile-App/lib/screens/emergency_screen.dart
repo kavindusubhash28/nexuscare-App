@@ -14,7 +14,6 @@ class EmergencyScreen extends StatefulWidget {
 }
 
 class _EmergencyScreenState extends State<EmergencyScreen> {
-  final _patientIdCtrl     = TextEditingController();
   final _contactNameCtrl   = TextEditingController();
   final _contactPhoneCtrl  = TextEditingController();
   final _bloodGroupCtrl    = TextEditingController();
@@ -28,30 +27,25 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill patient ID if already set
-    final pid = context.read<AuthProvider>().patientId;
-    if (pid != null) _patientIdCtrl.text = pid;
   }
 
   @override
   void dispose() {
-    _patientIdCtrl.dispose(); _contactNameCtrl.dispose();
+    _contactNameCtrl.dispose();
     _contactPhoneCtrl.dispose(); _bloodGroupCtrl.dispose();
     _allergiesCtrl.dispose(); _conditionsCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
-    if (_patientIdCtrl.text.isEmpty) {
-      setState(() => _error = 'Patient ID is required'); return;
+    final pid = context.read<AuthProvider>().patientId;
+    if (pid == null) {
+      setState(() => _error = 'Patient ID is missing. Please update your profile/relogin.'); return;
     }
     setState(() { _saving = true; _error = null; _success = null; });
 
-    // Save patient ID in auth provider
-    context.read<AuthProvider>().setPatientId(_patientIdCtrl.text.trim());
-
     final err = await context.read<PatientProvider>().updateEmergency(
-      _patientIdCtrl.text.trim(), {
+      pid, {
         'contact_name':       _contactNameCtrl.text.trim(),
         'contact_phone':      _contactPhoneCtrl.text.trim(),
         'blood_group':        _bloodGroupCtrl.text.trim().isEmpty ? 'N/A' : _bloodGroupCtrl.text.trim(),
@@ -68,12 +62,12 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   Future<void> _toggleVisibility(bool v) async {
-    if (_patientIdCtrl.text.isEmpty) {
-      setState(() => _error = 'Set Patient ID first'); return;
+    final pid = context.read<AuthProvider>().patientId;
+    if (pid == null) {
+      setState(() => _error = 'Patient ID is missing.'); return;
     }
     setState(() => _isPublic = v);
-    await context.read<PatientProvider>().toggleVisibility(
-        _patientIdCtrl.text.trim(), v);
+    await context.read<PatientProvider>().toggleVisibility(pid, v);
   }
 
   @override
@@ -112,16 +106,12 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF60A5FA))),
             ]),
             const SizedBox(height: 10),
-            NxTextField(
-              controller: _patientIdCtrl,
-              label: 'Patient ID', hint: 'e.g. 1',
-              icon: Icons.person_pin_outlined, keyboardType: TextInputType.number,
-              
+            Text(
+              auth.patientId ?? 'Not Set — Please Login Again',
+              style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 6),
-            Text(auth.patientId != null 
-                ? 'Your Patient ID is automatically linked to your account.'
-                : 'Ask your doctor or check your registration confirmation for your Patient ID.',
+            Text('Your Patient ID is automatically linked to your account.',
                 style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF6B7280))),
           ]),
         ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1),
