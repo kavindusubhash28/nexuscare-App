@@ -63,9 +63,7 @@ export default function UploadReport() {
       const fd = new FormData();
       fd.append("file", file);
 
-      await api.post(`/api/lab/requests/${selectedId}/upload-report`, fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      await api.post(`/api/lab/requests/${selectedId}/upload-report`, fd);
 
       toast.push("success", "Report uploaded ✅ Request marked completed.");
       setFile(null);
