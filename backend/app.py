@@ -36,6 +36,10 @@ _default_origins = [
     "https://nexuscare-lab-portal.vercel.app",
     "https://nexuscare-admin-portal.vercel.app",
     "https://nexuscare-emergency-responder-portal.vercel.app",
+    "https://nexuscare-emergency-responder.netlify.app",
+    "https://deploy-preview-122--nexuscare-emergency-responder.netlify.app",
+    "https://deploy-preview-123--nexuscare-emergency-responder.netlify.app",
+    "https://deploy-preview-124--nexuscare-emergency-responder.netlify.app"
     # EC2 via nip.io (no custom domain needed)
     "https://13.60.80.212.nip.io",
     # local development
@@ -53,6 +57,7 @@ CORS(
     supports_credentials=True,
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    resources={r"/*": {"origins": "*"}},
 )
 
 
