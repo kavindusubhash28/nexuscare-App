@@ -1,3 +1,4 @@
+// Tailwind configuration for NexusCare Lab Portal
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
