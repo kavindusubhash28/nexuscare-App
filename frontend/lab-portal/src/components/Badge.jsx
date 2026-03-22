@@ -1,3 +1,4 @@
+// Minor update for Git tracking - badge component
 export default function Badge({ text }) {
   const t = (text || "").toLowerCase();
   const cls =
