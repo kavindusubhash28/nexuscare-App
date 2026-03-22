@@ -96,6 +96,24 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // ── Reset Password ───────────────────────────────────────────────────
+  Future<String?> resetPassword(String email, String newPassword) async {
+    _status = AuthStatus.loading;
+    _errorMsg = null;
+    notifyListeners();
+    try {
+      await _api.resetPassword(email, newPassword);
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return null; // success
+    } catch (e) {
+      _status   = AuthStatus.error;
+      _errorMsg = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+      return _errorMsg;
+    }
+  }
+
   // ── Sign Out ─────────────────────────────────────────────────────────
   Future<void> signOut() async {
     await _auth.signOut();
