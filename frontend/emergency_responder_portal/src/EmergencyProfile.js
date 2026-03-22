@@ -17,7 +17,6 @@ function getApiBase() {
 function EmergencyProfile() {
 
   const { patientId } = useParams();
-  const DEFAULT_API_BASE = "https://13.60.80.212.nip.io";
 
   const [data, setData] = useState(null);
   const [message, setMessage] = useState("");
