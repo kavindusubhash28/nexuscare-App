@@ -9,9 +9,9 @@ import qrcode
 from supabase import create_client
 
 
-SUPABASE_URL = os.getenv("SUPABASE_URL") or ""
-SUPABASE_KEY = os.getenv("SUPABASE_KEY") or ""
-SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET") or ""
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET")
 
 # Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -48,8 +48,7 @@ def generate_qr_image(patient_id):
     file_path = os.path.join(QR_FOLDER, filename)
 
     img = qrcode.make(url)
-    with open(file_path, "wb") as f:
-        img.save(f)
+    img.save(file_path)
 
     return file_path, filename
 
