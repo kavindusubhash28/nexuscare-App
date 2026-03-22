@@ -15,26 +15,10 @@ function EmergencyProfile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
-    const apiBase = process.env.REACT_APP_API_BASE_URL || 'https://13.60.80.212.nip.io';
-
-  fetch(`${apiBase}/emergency/${encodeURIComponent(patientId)}`)
-    .then((response) => response.json())
-    .then((result) => {
-
-      setLoading(false);
-
-      if (result.message) {
-        setMessage(result.message);
-      } else {
-        setData(result);
-      }
-
-    })
-    .catch(() => {
-      setLoading(false);
-      setMessage("Server not reachable");
-    });
+    REACT_APP_API_BASE_URL='https://13.60.80.212.nip.io'
+    
+    const apiBase = process.env.REACT_APP_API_BASE_URL;
+    fetch(`${apiBase}/emergency/PT001`);
 
 }, [patientId]);
 
