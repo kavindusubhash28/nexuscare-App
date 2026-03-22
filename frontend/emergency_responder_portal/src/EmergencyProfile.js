@@ -16,7 +16,7 @@ function EmergencyProfile() {
 
   useEffect(() => {
 
-  fetch(`http://13.60.80.212:5000/emergency/${patientId}`)
+  fetch(`https://13.60.80.212.nip.io/emergency/${patientId}`)
       .then((response) => response.json())
       .then((result) => {
 
