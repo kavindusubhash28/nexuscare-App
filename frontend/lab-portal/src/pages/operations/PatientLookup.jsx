@@ -115,7 +115,9 @@ export default function PatientLookup() {
       setUploadingRequestId(requestId);
       const fd = new FormData();
       fd.append("file", file);
-      await api.post(`/api/lab/requests/${requestId}/upload-report`, fd);
+      await api.post(`/api/lab/requests/${requestId}/upload-report`, fd, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       toast.push("success", "Report uploaded successfully.");
       await loadHistory(patient?.patient_id);
     } catch (err) {
