@@ -19,9 +19,9 @@ import Loading from "./components/Loading.jsx";
 
 import { useAuth } from "./context/AuthContext.jsx";
 
+// Protected route wrapper for authenticated pages
 function Protected({ children }) {
   const { user, loading } = useAuth();
-
 
   if (loading) return <Loading label="Loading..." />;
 
@@ -34,11 +34,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
+        {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Layout */}
+        {/* Protected application layout */}
         <Route
           path="/"
           element={
@@ -49,18 +49,18 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
 
-          {/* Lab Operations */}
+          {/* Lab operations routes */}
           <Route path="operations/patient-lookup" element={<PatientLookup />} />
           <Route path="operations/upload" element={<UploadReport />} />
 
-          {/* Settings */}
+          {/* Settings routes */}
           <Route path="settings/availability" element={<Availability />} />
 
-          {/* Account */}
+          {/* Account routes */}
           <Route path="account/profile" element={<Profile />} />
         </Route>
 
-        {/* Fallback */}
+        {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
