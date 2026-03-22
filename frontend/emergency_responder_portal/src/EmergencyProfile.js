@@ -26,7 +26,7 @@ function EmergencyProfile() {
 
   const apiBase = getApiBase();
 
-  fetch(`${apiBase}/emergency/${encodeURIComponent(patientId)}`)
+  fetch(`https://13.60.80.212.nip.io/emergency/${encodeURIComponent(patientId)}`)
     .then((response) => response.json())
     .then((result) => {
 
