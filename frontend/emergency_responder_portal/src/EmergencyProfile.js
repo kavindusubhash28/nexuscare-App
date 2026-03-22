@@ -15,7 +15,6 @@ function EmergencyProfile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    REACT_APP_API_BASE_URL='https://13.60.80.212.nip.io'
     
     const apiBase = process.env.REACT_APP_API_BASE_URL;
     fetch(`${apiBase}/emergency/PT001`);
