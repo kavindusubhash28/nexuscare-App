@@ -1,3 +1,4 @@
+// Minor update for Git tracking - app layout
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
