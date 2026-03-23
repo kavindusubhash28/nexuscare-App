@@ -35,33 +35,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0A0D14) : const Color(0xFFF3F4F6),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header ──────────────────────────────────────────────
-            Text(
-              'Settings',
-              style: GoogleFonts.inter(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : const Color(0xFF111827),
+      body: Container(
+        decoration: isDark
+            ? const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF0F172A), Color(0xFF111827)],
+                ),
+              )
+            : null,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Header ──────────────────────────────────────────────
+              Text(
+                'Settings',
+                style: GoogleFonts.inter(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: isDark ? Colors.white : const Color(0xFF111827),
+                  letterSpacing: isDark ? -0.5 : 0,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Manage your account and preferences',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+              const SizedBox(height: 6),
+              Text(
+                'Manage your account and preferences',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280),
+                  height: 1.4,
+                ),
               ),
-            ),
-            const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-            // ── Profile Card ────────────────────────────────────────
-            _buildProfileCard(auth, settings, isDark),
-            const SizedBox(height: 20),
+              // ── Profile Card ────────────────────────────────────────
+              _buildProfileCard(auth, settings, isDark),
+              const SizedBox(height: 24),
 
             // ── Account Section ─────────────────────────────────────
             _sectionLabel('Account', isDark),
@@ -177,8 +190,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ).animate().fadeIn(delay: 300.ms),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
@@ -324,22 +338,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF111827) : Colors.white,
+            gradient: isDark
+                ? const LinearGradient(
+                    colors: [Color(0xFF1F2937), Color(0xFF111827)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: !isDark ? Colors.white : null,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isDark ? const Color(0xFF1F2937) : const Color(0xFFE5E7EB),
+              color: isDark ? const Color(0xFF2D3748) : const Color(0xFFE5E7EB),
+              width: isDark ? 1.5 : 1,
             ),
+            boxShadow: isDark
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: iconColor.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: iconColor.withOpacity(0.2), width: 1),
                 ),
-                child: Icon(icon, color: iconColor, size: 20),
+                child: Icon(icon, color: iconColor, size: 22),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -348,15 +380,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Text(title,
                         style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
                           color: isDark ? Colors.white : const Color(0xFF111827),
+                          letterSpacing: 0.1,
                         )),
-                    const SizedBox(height: 1),
+                    const SizedBox(height: 2),
                     Text(subtitle,
                         style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280),
                         )),
                   ],
                 ),
@@ -382,24 +416,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ValueChanged<bool> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF111827) : Colors.white,
+        gradient: isDark
+            ? const LinearGradient(
+                colors: [Color(0xFF1F2937), Color(0xFF111827)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: !isDark ? Colors.white : null,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDark ? const Color(0xFF1F2937) : const Color(0xFFE5E7EB),
+          color: isDark ? const Color(0xFF2D3748) : const Color(0xFFE5E7EB),
+          width: isDark ? 1.5 : 1,
         ),
+        boxShadow: isDark
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: iconColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: iconColor.withOpacity(0.2), width: 1),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -408,15 +460,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(title,
                     style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                       color: isDark ? Colors.white : const Color(0xFF111827),
+                      letterSpacing: 0.1,
                     )),
-                const SizedBox(height: 1),
+                const SizedBox(height: 2),
                 Text(subtitle,
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280),
                     )),
               ],
             ),
