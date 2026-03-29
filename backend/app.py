@@ -13,6 +13,7 @@ from src.routes.pharmacy import pharmacy_bp
 from src.routes.lab import lab_bp
 from src.routes.emergency import emergency_bp
 from src.routes.admin_dashboard import admin_dashboard_bp
+from src.routes.patient_chat_routes import patient_chat_bp
 
 # Initialise Firebase (requires FIREBASE_KEY_PATH in .env)
 try:
@@ -64,6 +65,7 @@ app.register_blueprint(lab_bp, url_prefix="/api")
 app.register_blueprint(emergency_bp, url_prefix="/emergency")
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(admin_dashboard_bp, url_prefix="/admin")
+app.register_blueprint(patient_chat_bp, url_prefix="/api")
 
 @app.route("/")
 def home():
