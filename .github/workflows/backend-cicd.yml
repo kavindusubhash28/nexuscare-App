@@ -109,117 +109,116 @@ jobs:
   # ===========================================================================
   # Job 2: Docker Build & Smoke Test
   # ===========================================================================
-  
   docker-build:
-  name: Docker Build & Smoke Test
-  runs-on: ubuntu-latest
-  needs: test
+    name: Docker Build & Smoke Test
+    runs-on: ubuntu-latest
+    needs: test
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Build image (no push yet)
-      uses: docker/build-push-action@v5
-      with:
-        context: ./backend
-        push: false
-        tags: ${{ env.DOCKERHUB_IMAGE }}:ci-test
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        load: true
+      - name: Build image (no push yet)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: ${{ env.DOCKERHUB_IMAGE }}:ci-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
 
-    - name: Smoke test - container starts
-      run: |
-        docker run -d \
-          --name nexuscare-smoke \
-          -p 5000:5000 \
-          -e FLASK_ENV=testing \
-          -e AUTH_DB_HOST=localhost \
-          -e HOSPITAL_DB_HOST=localhost \
-          -e JWT_SECRET=test_secret \
-          -e SUPABASE_SERVICE_ROLE_KEY=test_role_key \
-          -e FIREBASE_KEY_PATH="" \
-          ${{ env.DOCKERHUB_IMAGE }}:ci-test
+      - name: Smoke test - container starts
+        run: |
+          docker run -d \
+            --name nexuscare-smoke \
+            -p 5000:5000 \
+            -e FLASK_ENV=testing \
+            -e AUTH_DB_HOST=localhost \
+            -e HOSPITAL_DB_HOST=localhost \
+            -e JWT_SECRET=test_secret \
+            -e SUPABASE_SERVICE_ROLE_KEY=test_role_key \
+            -e FIREBASE_KEY_PATH="" \
+            ${{ env.DOCKERHUB_IMAGE }}:ci-test
 
-        echo "Waiting for container to start..."
-        sleep 15
+          echo "Waiting for container to start..."
+          sleep 15
 
-        STATUS=$(docker inspect --format='{{.State.Status}}' nexuscare-smoke)
-        echo "Container status: $STATUS"
-        if [ "$STATUS" != "running" ]; then
-          echo "FAIL: Container is not running (status: $STATUS)"
+          STATUS=$(docker inspect --format='{{.State.Status}}' nexuscare-smoke)
+          echo "Container status: $STATUS"
+          if [ "$STATUS" != "running" ]; then
+            echo "FAIL: Container is not running (status: $STATUS)"
+            docker logs nexuscare-smoke
+            exit 1
+          fi
+
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/health || echo "000")
+          echo "HTTP response from /health: $HTTP_CODE"
           docker logs nexuscare-smoke
-          exit 1
-        fi
 
-        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/health || echo "000")
-        echo "HTTP response from /health: $HTTP_CODE"
-        docker logs nexuscare-smoke
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: Expected HTTP 200 from /health, got $HTTP_CODE"
+            exit 1
+          fi
+          echo "Smoke test passed!"
+  embedding-docker-build:
+    name: Embedding Docker Build & Smoke Test
+    
+    runs-on: ubuntu-latest
+    needs: test
 
-        if [ "$HTTP_CODE" != "200" ]; then
-          echo "FAIL: Expected HTTP 200 from /health, got $HTTP_CODE"
-          exit 1
-        fi
-        echo "Smoke test passed!"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-embedding-docker-build:
-  name: Embedding Docker Build & Smoke Test
-  runs-on: ubuntu-latest
-  needs: test
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Build embedding image (no push yet)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./embedding-service
+          push: false
+          tags: embedding-service:ci-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+      - name: Smoke test - embedding container starts
+        run: |
+          docker run -d \
+            --name embedding-smoke \
+            -p 8001:8001 \
+            embedding-service:ci-test
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+          echo "Waiting for embedding container to start..."
+          sleep 20
 
-    - name: Build embedding image (no push yet)
-      uses: docker/build-push-action@v5
-      with:
-        context: ./embedding-service
-        push: false
-        tags: embedding-service:ci-test
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        load: true
-
-    - name: Smoke test - embedding container starts
-      run: |
-        docker run -d \
-          --name embedding-smoke \
-          -p 8001:8001 \
-          embedding-service:ci-test
-
-        echo "Waiting for embedding container to start..."
-        sleep 20
-
-        STATUS=$(docker inspect --format='{{.State.Status}}' embedding-smoke)
-        echo "Container status: $STATUS"
-        if [ "$STATUS" != "running" ]; then
-          echo "FAIL: Embedding container is not running (status: $STATUS)"
+          STATUS=$(docker inspect --format='{{.State.Status}}' embedding-smoke)
+          echo "Container status: $STATUS"
+          if [ "$STATUS" != "running" ]; then
+            echo "FAIL: Embedding container is not running (status: $STATUS)"
+            docker logs embedding-smoke
+            exit 1
+          fi
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/health || echo "000")
+          echo "HTTP response from embedding /health: $HTTP_CODE"
           docker logs embedding-smoke
-          exit 1
-        fi
 
-        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/health || echo "000")
-        echo "HTTP response from embedding /health: $HTTP_CODE"
-        docker logs embedding-smoke
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: Expected HTTP 200 from embedding /health, got $HTTP_CODE"
+            exit 1
+          fi
+          
+          echo "Embedding smoke test passed!" 
 
-        if [ "$HTTP_CODE" != "200" ]; then
-          echo "FAIL: Expected HTTP 200 from embedding /health, got $HTTP_CODE"
-          exit 1
-        fi
-        echo "Embedding smoke test passed!"
-  
 
   # ===========================================================================
   # Job 3: Push to Docker Hub
-   push-dockerhub:
+  # ===========================================================================
+  push-dockerhub:
     name: Push to Docker Hub
     runs-on: ubuntu-latest
     needs: [docker-build, embedding-docker-build]
