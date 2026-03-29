@@ -9,5 +9,4 @@ google-genai
 pypdf
 qdrant-client
 supabase
-sentence-transformers
-torch --index-url https://download.pytorch.org/whl/cpu
+
