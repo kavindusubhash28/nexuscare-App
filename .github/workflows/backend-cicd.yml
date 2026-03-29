@@ -42,13 +42,11 @@ on:
     branches: [main]
     paths:
       - "backend/**"
-      - "embedding-service/**"
       - ".github/workflows/backend-cicd.yml"
   pull_request:
     branches: [main]
     paths:
       - "backend/**"
-      - "embedding-service/**"
       - ".github/workflows/backend-cicd.yml"
 
 concurrency:
@@ -57,7 +55,6 @@ concurrency:
 
 env:
   DOCKERHUB_IMAGE: kavindur2003/nexuscare-backend
-  EMBEDDING_DOCKERHUB_IMAGE: kavindur2003/nexuscare-embedding-service
 
 jobs:
   # ===========================================================================
@@ -164,56 +161,6 @@ jobs:
             exit 1
           fi
           echo "Smoke test passed!"
-  embedding-docker-build:
-    name: Embedding Docker Build & Smoke Test
-    
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build embedding image (no push yet)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./embedding-service
-          push: false
-          tags: embedding-service:ci-test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          load: true
-      - name: Smoke test - embedding container starts
-        run: |
-          docker run -d \
-            --name embedding-smoke \
-            -p 8001:8001 \
-            embedding-service:ci-test
-
-          echo "Waiting for embedding container to start..."
-          sleep 20
-
-          STATUS=$(docker inspect --format='{{.State.Status}}' embedding-smoke)
-          echo "Container status: $STATUS"
-          if [ "$STATUS" != "running" ]; then
-            echo "FAIL: Embedding container is not running (status: $STATUS)"
-            docker logs embedding-smoke
-            exit 1
-          fi
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/health || echo "000")
-          echo "HTTP response from embedding /health: $HTTP_CODE"
-          docker logs embedding-smoke
-
-          if [ "$HTTP_CODE" != "200" ]; then
-            echo "FAIL: Expected HTTP 200 from embedding /health, got $HTTP_CODE"
-            exit 1
-          fi
-          
-          echo "Embedding smoke test passed!" 
-
 
   # ===========================================================================
   # Job 3: Push to Docker Hub
@@ -221,7 +168,7 @@ jobs:
   push-dockerhub:
     name: Push to Docker Hub
     runs-on: ubuntu-latest
-    needs: [docker-build, embedding-docker-build]
+    needs: docker-build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -258,52 +205,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  push-embedding-dockerhub:
-    name: Push Embedding to Docker Hub
-    runs-on: ubuntu-latest
-    needs: embedding-docker-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata (tags + labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.EMBEDDING_DOCKERHUB_IMAGE }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix=sha-,format=short
-            type=ref,event=branch
-
-      - name: Build & push embedding to Docker Hub
-        uses: docker/build-push-action@v5
-        with:
-          context: ./embedding-service
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
   # ===========================================================================
   # Job 4: Deploy to AWS EC2 (fully automated – no manual setup required)
   # ===========================================================================
   deploy-ec2:
     name: Deploy to AWS EC2
     runs-on: ubuntu-latest
-    needs: [push-dockerhub, push-embedding-dockerhub]
+    needs: push-dockerhub
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -326,13 +234,16 @@ jobs:
           FIREBASE_KEY_B64: ${{ secrets.FIREBASE_SERVICE_KEY_B64 }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+          QDRANT_COLLECTION: ${{ secrets.QDRANT_COLLECTION }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           timeout: 60s
           command_timeout: 5m
-          envs: AUTH_DB_HOST,AUTH_DB_PORT,AUTH_DB_NAME,AUTH_DB_USER,AUTH_DB_PASSWORD,HOSPITAL_DB_HOST,HOSPITAL_DB_PORT,HOSPITAL_DB_NAME,HOSPITAL_DB_USER,HOSPITAL_DB_PASSWORD,FIREBASE_API_KEY,FIREBASE_KEY_B64,JWT_SECRET,SUPABASE_SERVICE_ROLE_KEY
+          envs: AUTH_DB_HOST,AUTH_DB_PORT,AUTH_DB_NAME,AUTH_DB_USER,AUTH_DB_PASSWORD,HOSPITAL_DB_HOST,HOSPITAL_DB_PORT,HOSPITAL_DB_NAME,HOSPITAL_DB_USER,HOSPITAL_DB_PASSWORD,FIREBASE_API_KEY,FIREBASE_KEY_B64,JWT_SECRET,SUPABASE_SERVICE_ROLE_KEY,QDRANT_URL,QDRANT_API_KEY,QDRANT_COLLECTION
           script: |
             set -e
             mkdir -p ~/nexuscare
@@ -353,7 +264,9 @@ jobs:
             FIREBASE_API_KEY=$FIREBASE_API_KEY
             JWT_SECRET=$JWT_SECRET
             SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
-            EMBEDDING_SERVICE_URL=http://host.docker.internal:8001/embed
+            QDRANT_URL=$QDRANT_URL
+            QDRANT_API_KEY=$QDRANT_API_KEY
+            QDRANT_COLLECTION=$QDRANT_COLLECTION
             ENV_EOF
 
             # Decode and write firebase service-account key
@@ -377,58 +290,14 @@ jobs:
           timeout: 60s
           command_timeout: 10m
           script: |
-            
-            
             set -e
             APP_DIR="$HOME/nexuscare"
             PROD_CONTAINER="nexuscare-backend"
             CANDIDATE_CONTAINER="nexuscare-backend-candidate"
             IMAGE="kavindur2003/nexuscare-backend:latest"
 
-            EMBED_CONTAINER="nexuscare-embedding-service"
-            EMBED_IMAGE="kavindur2003/nexuscare-embedding-service:latest"
-
             echo "=== Pulling latest image from Docker Hub ==="
             docker pull "$IMAGE"
-            docker pull "$EMBED_IMAGE"
-            
-            echo "=== Replacing embedding container ==="
-            docker stop "$EMBED_CONTAINER" || true
-            docker rm "$EMBED_CONTAINER" || true
-            
-            docker run -d \
-              --name "$EMBED_CONTAINER" \
-              --restart unless-stopped \
-              -p 8001:8001 \
-              "$EMBED_IMAGE"
-            
-            echo "=== Waiting for embedding health ==="
-            ATTEMPT=1
-            MAX_ATTEMPTS=12
-            until [ "$ATTEMPT" -gt "$MAX_ATTEMPTS" ]; do
-              STATUS=$(docker inspect --format='{{.State.Status}}' "$EMBED_CONTAINER" 2>/dev/null || echo "missing")
-            
-              if [ "$STATUS" != "running" ]; then
-                echo "Embedding container status: $STATUS"
-                docker logs "$EMBED_CONTAINER" || true
-                exit 1
-              fi
-              if [ "$ATTEMPT" = "$MAX_ATTEMPTS" ]; then
-                echo "FAIL: Embedding never became healthy"
-                docker logs "$EMBED_CONTAINER" || true
-                exit 1
-              fi
-            
-              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/health || true)
-              echo "Embedding health attempt $ATTEMPT/$MAX_ATTEMPTS: $HTTP_CODE"
-            
-              if [ "$HTTP_CODE" = "200" ]; then
-                break
-              fi
-            
-              ATTEMPT=$((ATTEMPT + 1))
-              sleep 5
-            done  
 
             echo "=== Validating required runtime files ==="
             test -f "$APP_DIR/.env"
@@ -443,7 +312,6 @@ jobs:
               --name "$CANDIDATE_CONTAINER" \
               --restart unless-stopped \
               -p 5001:5000 \
-              --add-host=host.docker.internal:host-gateway \
               --env-file "$APP_DIR/.env" \
               -v "$APP_DIR/firebase_service_key.json:/app/firebase_service_key.json:ro" \
               "$IMAGE"
@@ -484,7 +352,6 @@ jobs:
               --name "$PROD_CONTAINER" \
               --restart unless-stopped \
               -p 5000:5000 \
-              --add-host=host.docker.internal:host-gateway \
               --env-file "$APP_DIR/.env" \
               -v "$APP_DIR/firebase_service_key.json:/app/firebase_service_key.json:ro" \
               "$IMAGE"
