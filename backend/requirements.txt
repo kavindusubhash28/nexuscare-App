@@ -8,5 +8,5 @@ requests
 google-genai
 pypdf
 qdrant-client
-
+sentence-transformers
 supabase
