@@ -65,8 +65,9 @@ app.register_blueprint(pharmacy_bp, url_prefix="/api")
 app.register_blueprint(lab_bp, url_prefix="/api")
 app.register_blueprint(emergency_bp, url_prefix="/emergency")
 app.register_blueprint(auth_bp, url_prefix="/auth")
-app.register_blueprint(admin_dashboard_bp, url_prefix="/admin")
 app.register_blueprint(patient_chat_bp, url_prefix="/api")
+app.register_blueprint(admin_dashboard_bp, url_prefix="/admin")
+
 
 
 @app.route("/")
