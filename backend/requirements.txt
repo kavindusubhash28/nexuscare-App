@@ -5,3 +5,8 @@ psycopg2-binary
 firebase-admin
 pyjwt
 requests
+google-genai
+pypdf
+qdrant-client
+sentence-transformers
+supabase
