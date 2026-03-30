@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from src.services.patient_chat_service import handle_patient_chat
+import os
+from services.patient_chat_service import handle_patient_chat
 
 patient_chat_bp = Blueprint("patient_chat", __name__)
 
@@ -17,6 +18,9 @@ def patient_chat_message():
         return jsonify({"error": "message is required"}), 400
 
     try:
+        # Allow per-request test mode via header for local testing
+        if (request.headers.get("X-CHATBOT-TEST") or "").lower() in ("1", "true", "yes"):
+            os.environ["CHATBOT_TEST_MODE"] = "1"
         result = handle_patient_chat(patient_id, message)
         return jsonify(result), 200
     except ValueError as e:

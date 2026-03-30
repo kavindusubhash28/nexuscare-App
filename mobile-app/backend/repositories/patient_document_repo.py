@@ -1,4 +1,4 @@
-from src.utils.db import get_conn
+from utils.db import get_conn
 
 
 def get_lab_report(lab_report_id):

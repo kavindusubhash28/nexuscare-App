@@ -1,5 +1,5 @@
 from datetime import date
-from src.utils.db import get_conn
+from utils.db import get_conn
 
 
 def calculate_age(dob):
