@@ -9,9 +9,7 @@ load_dotenv()
 # Configuration
 LLM_BACKEND = os.getenv("LLM_BACKEND", "gemini").lower()
 
-# Gemini Config
-api_key = os.getenv("GOOGLE_API_KEY")
-gemini_client = genai.Client(api_key=api_key) if api_key else None
+# Gemini: create client on-demand so updated env vars are picked up at call time
 
 # Ollama Config
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -24,12 +22,14 @@ def generate_chat_response(system_prompt: str, user_prompt: str) -> str:
         return _generate_gemini_response(system_prompt, user_prompt)
 
 def _generate_gemini_response(system_prompt: str, user_prompt: str) -> str:
-    if not gemini_client:
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
         return "Error: GOOGLE_API_KEY not configured in .env file."
-    
+
     try:
+        client = genai.Client(api_key=api_key)
         combined_prompt = f"{system_prompt}\n\nUser: {user_prompt}"
-        response = gemini_client.models.generate_content(
+        response = client.models.generate_content(
             model="gemini-flash-latest",
             contents=combined_prompt
         )

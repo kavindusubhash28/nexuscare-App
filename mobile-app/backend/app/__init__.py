@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from routes.patient_register import patient_register_bp
 from routes.patient_profile  import patient_profile_bp
+from routes.patient_chat_routes import patient_chat_bp
 
 from app.firebase.firebase_init import init_firebase
 from app.auth.routes import auth_bp, admin_bp
@@ -39,6 +40,7 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(patient_register_bp)
     app.register_blueprint(patient_profile_bp)
+    app.register_blueprint(patient_chat_bp, url_prefix="/api") # Chatbot endpoint
 
     # ── Clinical routes (all protected by @token_required inside each file) ──
     # /doctor/available-times/<doctor_id>/<date>           GET
